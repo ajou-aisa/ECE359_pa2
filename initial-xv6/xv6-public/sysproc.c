@@ -89,3 +89,17 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int
+sys_setuid(void)
+{
+  int uid;
+  if(argint(0, &uid) < 0)
+    return -1;
+  
+  if(uid < 0 || uid >= NUID) 
+    return -1;
+    
+  myproc()->uid = uid;
+  return 0;
+}

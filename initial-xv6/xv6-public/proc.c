@@ -122,6 +122,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->uid = myproc() ? myproc()->uid : 0;
 
   release(&ptable.lock);
 

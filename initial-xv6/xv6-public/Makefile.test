@@ -184,7 +184,17 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_test\
-	#_test_lottery\
+	_test_currency\
+	_test_currency2\
+	_test_currency3\
+
+ifneq ($(wildcard test_currency2.c),test_currency2.c)
+test_currency2.o:
+endif
+
+ifneq ($(wildcard test_currency3.c),test_currency3.c)
+test_currency3.o:
+endif
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -221,7 +231,7 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 	then echo "-gdb tcp::$(GDBPORT)"; \
 	else echo "-s -p $(GDBPORT)"; fi)
 ifndef CPUS
-CPUS := 2
+CPUS := 1
 endif
 QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
 

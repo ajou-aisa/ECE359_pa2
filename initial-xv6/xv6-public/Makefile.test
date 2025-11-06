@@ -184,7 +184,6 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_test\
-	_test_currency\
 	_test_currency2\
 	_test_currency3\
 

@@ -11,16 +11,42 @@ TESTS_OUT="tests-out"
 
 TEST_LIST=("cur2" "cur3")
 
+C_FILE_TESTS=("test_currency2" "test_currency3")
+TEST_NAMES_STR=$(IFS=,; echo "${C_FILE_TESTS[*]}")
+
+
 echo "=====  Initializing Test Environment ====="
 echo "Cleaning $XV6_DIR..."
 (cd $XV6_DIR && make clean) > /dev/null 2>&1 || true
+
+echo "Generating temporary Makefile ($XV6_DIR/Makefile.test)..."
+gawk -vtestnames=$TEST_NAMES_STR '
+BEGIN {
+    n = split(testnames, x, ",");
+}
+($1 == "_mkdir\\") {
+    for (i = 1; i <= n; i++) {
+        printf("\t_%s\\\n", x[i]);
+    }
+} 
+{
+    print $0;
+}
+END {
+    for (i = 1; i <= n; i++) {
+        printf("\nifneq ($(wildcard %s.c),%s.c)\n", x[i], x[i]);
+        printf("%s.o:\n", x[i]);
+        printf("endif\n");
+    }
+}
+' $XV6_DIR/Makefile > $XV6_DIR/Makefile.test
 
 echo "Copying object files to $XV6_DIR..."
 cp $TEST_DIR/test_currency2.o $XV6_DIR/
 cp $TEST_DIR/test_currency3.o $XV6_DIR/
 
-echo "Building xv6 (linking files)..."
-(cd $XV6_DIR && make) > /dev/null 2>&1
+echo "Building xv6 (linking files using Makefile.test)..."
+(cd $XV6_DIR && make -f Makefile.test) > /dev/null 2>&1
 echo "Build complete."
 echo ""
 
